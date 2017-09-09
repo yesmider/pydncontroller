@@ -1,5 +1,5 @@
 import os
-import get_console_opt
+from pydncontroller.opt import get_console_opt
 
 
 class Dnconsole:
