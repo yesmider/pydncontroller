@@ -11,7 +11,7 @@ class Dnconsole:
         if not os.path.isfile(self.basic_command):
             raise LookupError('Dnconsole not found.')
 
-    def run(self, command: str):
+    def _run(self, command: str):
         stdout, stderr = self.console(command)
         if stdout:
             if stdout == self.not_exist:
@@ -30,7 +30,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} quit --{method} {str(n)}'
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
@@ -40,7 +40,7 @@ class Dnconsole:
         :return:
         """
         command = f'{self.basic_command} quitall'
-        self.run(command)
+        self._run(command)
 
     def launch(self, method: str, n: str):
         """
@@ -51,7 +51,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} launch --{method} {str(n)}'
-            self.run(command)
+            self._run(command)
 
         else:
             raise TypeError('method wrong.')
@@ -65,7 +65,7 @@ class Dnconsole:
         """
         if method is self.method:
             command = f'{self.basic_command} reboot --{method} {n}'
-            self.run(command)
+            self._run(command)
 
         else:
             raise TypeError('method wrong.')
@@ -76,7 +76,7 @@ class Dnconsole:
         :return: list of name
         """
         command = f'{self.basic_command} list'
-        opt = self.run(command)
+        opt = self._run(command)
         if opt:
             index = opt.split('\n')
             res = [x for x in index if len(x) > 0]
@@ -88,7 +88,7 @@ class Dnconsole:
         :return: list of name
         """
         command = f'{self.basic_command} runninglist'
-        opt = self.run(command)
+        opt = self._run(command)
 
         if opt:
             index = opt.split('\n')
@@ -104,7 +104,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} isrunning --{method} {n}'
-            opt = self.run(command)
+            opt = self._run(command)
             if opt:
                 if opt == 'running':
                     return True
@@ -117,7 +117,7 @@ class Dnconsole:
         :return: dict of res
         """
         command = f'{self.basic_command} list2'
-        opt = self.run(command)
+        opt = self._run(command)
         temp = opt.split('\n')
         temp = [string.split(',') for string in temp if len(string) > 0]
         if temp:
@@ -133,7 +133,7 @@ class Dnconsole:
         :return: None
         """
         command = f'{self.basic_command} add --name {n}'
-        self.run(command)
+        self._run(command)
 
     def copy(self, n: str, from_n: str):
         """
@@ -143,7 +143,7 @@ class Dnconsole:
         :return: None
         """
         command = f'{self.basic_command} copy --name {n} --from {from_n}'
-        self.run(command)
+        self._run(command)
 
     def remove(self, method: str, n: str):
         """
@@ -154,7 +154,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} remove --{method} {n}'
-            opt = self.run(command)
+            opt = self._run(command)
             if opt == "player don't exist!":
                 raise IOError('player not exist!')
         else:
@@ -170,7 +170,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} rename --{method} {n} --title {title}'
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
@@ -184,13 +184,13 @@ class Dnconsole:
         """
         if method in self.method:
             if not kwargs:
-                raise KeyError('must have kwargs to run.')
+                raise KeyError('must have kwargs to _run.')
             command = f'{self.basic_command} modify --{method} {n}'
             temp_string = " "
             for key, value in kwargs.items():
                 temp_string += f'--{key} {value}'
             command = command + temp_string
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
@@ -204,7 +204,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} installapp --{method} {n} --filename {filename}'
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
@@ -218,7 +218,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} uninstallapp --{method} {n} --packagename {apkname}'
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
@@ -232,7 +232,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} --runapp --{method} {n} --packagename {apkname}'
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
@@ -246,7 +246,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} killapp --{method} {n} --packagename {apkname}'
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
@@ -260,7 +260,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} locate --{method} {n} --LLI {LLI}'
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
@@ -274,7 +274,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} adb --{method} {n} --command {cmd}'
-            opt = self.run(command)
+            opt = self._run(command)
             if opt:
                 return opt
         else:
@@ -283,14 +283,14 @@ class Dnconsole:
     def setprop(self, method: str, n: str, key: str, value: str):
         if method in self.method:
             command = f'{self.basic_command} setprop --{method} {n} --key {key} --value {value}'
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
     def getprop(self, method: str, n: str, key: str):
         if method in self.method:
             command = f'{self.basic_command} getprop --{method} {n} --key {key}'
-            opt = self.run(command)
+            opt = self._run(command)
             if opt:
                 return opt
         else:
@@ -306,7 +306,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} downcpu --{method} {n} --rate {rate}'
-            opt = self.run(command)
+            opt = self._run(command)
             if opt:
                 return opt
         else:
@@ -322,7 +322,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} backup --{method} {n} --file {tofilepath}'
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
@@ -336,7 +336,7 @@ class Dnconsole:
         """
         if method in self.method:
             command = f'{self.basic_command} restore --{method} {n} --file {fromfilepath}'
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
@@ -352,7 +352,7 @@ class Dnconsole:
         key_list = ['reboot', 'keyboard', 'locate', 'shake', 'input']
         if method in self.method and key in key_list:
             command = f'{self.basic_command} action --{method} {n} --key call.{key} --value {value}'
-            self.run(command)
+            self._run(command)
         else:
             raise TypeError('method wrong.')
 
